@@ -1,0 +1,75 @@
+﻿@model GamesWeb.ViewModels.Game.GameDetailsViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Детайли за играта</h1>
+
+<div>
+    <h4>Игра</h4>
+    <hr />
+
+    <dl class="row">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Genre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Genre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ReleaseYear)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ReleaseYear)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AgeRating)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AgeRating)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Developer)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Developer)
+        </dd>
+
+    </dl>
+
+    <hr />
+
+    <h4>Герои в играта</h4>
+
+    @if (Model.Characters.Any())
+    {
+        <ul>
+            @foreach (var character in Model.Characters)
+            {
+                <li>@character</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Няма добавени герои към тази игра.</p>
+    }
+
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Назад към списъка</a>
+</div>

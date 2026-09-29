@@ -1,0 +1,80 @@
+﻿@model IEnumerable<GamesWeb.ViewModels.Character.CharacterIndexViewModel>
+
+@{
+    ViewData["Title"] = "Characters";
+}
+
+<h1>Characters</h1>
+
+<p>
+    <a asp-action="Create">Create New Character</a>
+</p>
+
+<a asp-controller="Game"
+   asp-action="Index">
+    Покажи всички игри
+</a>
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Role)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Age)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GameTitle)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var character in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => character.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => character.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => character.Role)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => character.Age)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => character.GameTitle)
+                </td>
+                <td>
+                    <a asp-action="Edit"
+                       asp-route-id="@character.Id">
+                        Edit
+                    </a>
+                    |
+                    <a asp-action="Details"
+                       asp-route-id="@character.Id">
+                        Details
+                    </a>
+                    |
+                    <a asp-action="Delete"
+                       asp-route-id="@character.Id">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37027.9 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameManager", "GameManager\GameManager.csproj", "{5A4A619C-5A49-4C47-91EF-7F1C6A4FF564}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamesWeb", "GamesWeb\GamesWeb.csproj", "{7514309C-DEFF-44FD-9CE0-800BBC078EBA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5A4A619C-5A49-4C47-91EF-7F1C6A4FF564}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A4A619C-5A49-4C47-91EF-7F1C6A4FF564}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A4A619C-5A49-4C47-91EF-7F1C6A4FF564}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A4A619C-5A49-4C47-91EF-7F1C6A4FF564}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7514309C-DEFF-44FD-9CE0-800BBC078EBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7514309C-DEFF-44FD-9CE0-800BBC078EBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7514309C-DEFF-44FD-9CE0-800BBC078EBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7514309C-DEFF-44FD-9CE0-800BBC078EBA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FCC85C9A-936A-406E-8CFD-BA81555F1CB8}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,35 @@
+﻿@model GamesWeb.ViewModels.Game.GameDeleteViewModel
+
+<h1>Изтриване на игра</h1>
+
+<h3>Сигурни ли сте, че искате да изтриете тази игра?</h3>
+
+<div>
+
+    <hr />
+
+    <dl>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+
+    </dl>
+
+    <form asp-action="Delete" method="post">
+
+        <input asp-for="Id" type="hidden" />
+
+        <input type="submit" value="Delete" />
+
+        |
+
+        <a asp-action="Index">Назад към списъка</a>
+
+    </form>
+
+</div>

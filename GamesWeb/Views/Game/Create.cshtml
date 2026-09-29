@@ -1,0 +1,48 @@
+﻿@model GamesWeb.ViewModels.Game.GameCreateViewModel
+
+<h1>Добавяне на игра</h1>
+
+<form asp-action="Create" method="post">
+
+    <label>Име на играта:</label>
+    <input asp-for="Title" />
+    <span asp-validation-for="Title"></span>
+
+    <br />
+    <br />
+
+    <label>Жанр:</label>
+    <input asp-for="Genre" />
+    <span asp-validation-for="Genre"></span>
+
+    <br />
+    <br />
+
+    <label>Година на издаване:</label>
+    <input asp-for="ReleaseYear" />
+    <span asp-validation-for="ReleaseYear"></span>
+
+    <br />
+    <br />
+
+    <label>Възрастово ограничение:</label>
+    <input asp-for="AgeRating" />
+    <span asp-validation-for="AgeRating"></span>
+
+    <br />
+    <br />
+
+    <label>Разработчик:</label>
+    <input asp-for="Developer" />
+    <span asp-validation-for="Developer"></span>
+
+    <br />
+    <br />
+
+    <button type="submit">Запази</button>
+
+</form>
+
+<br />
+
+<a asp-action="Index">Назад към списъка</a>
