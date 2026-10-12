@@ -29,5 +29,8 @@ namespace GameManager.Entities
 
         public int GameId { get; set; }
         public Game Game { get; set; }
+
+        public ICollection<CharacterWeapon> CharacterWeapons
+        { get; set; } = new List<CharacterWeapon>();
     }
 }

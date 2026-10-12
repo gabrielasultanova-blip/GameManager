@@ -1,0 +1,67 @@
+﻿@model IEnumerable<GamesWeb.ViewModels.Weapon.WeaponIndexViewModel>
+
+@{
+    ViewData["Title"] = "Weapons";
+}
+
+<h1>Weapons</h1>
+
+<p>
+    <a asp-action="Create">Create New Weapon</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Type)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Damage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CharacterName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var weapon in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => weapon.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => weapon.Type)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => weapon.Damage)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => weapon.CharacterName)
+                </td>
+                <td>
+                    <a asp-action="Edit"
+                       asp-route-id="@weapon.Id">
+                        Edit
+                    </a>
+                    |
+                    <a asp-action="Details"
+                       asp-route-id="@weapon.Id">
+                        Details
+                    </a>
+                    |
+                    <a asp-action="Delete"
+                       asp-route-id="@weapon.Id">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

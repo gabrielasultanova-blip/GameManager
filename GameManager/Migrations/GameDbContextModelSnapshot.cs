@@ -57,6 +57,21 @@ namespace GameManager.Migrations
                     b.ToTable("Characters");
                 });
 
+            modelBuilder.Entity("GameManager.Entities.CharacterWeapon", b =>
+                {
+                    b.Property<int>("CharacterId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WeaponId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CharacterId", "WeaponId");
+
+                    b.HasIndex("WeaponId");
+
+                    b.ToTable("CharacterWeapons");
+                });
+
             modelBuilder.Entity("GameManager.Entities.Game", b =>
                 {
                     b.Property<int>("Id")
@@ -93,6 +108,32 @@ namespace GameManager.Migrations
                     b.ToTable("Games");
                 });
 
+            modelBuilder.Entity("GameManager.Entities.Weapon", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Damage")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Weapons");
+                });
+
             modelBuilder.Entity("GameManager.Entities.Character", b =>
                 {
                     b.HasOne("GameManager.Entities.Game", "Game")
@@ -104,9 +145,38 @@ namespace GameManager.Migrations
                     b.Navigation("Game");
                 });
 
+            modelBuilder.Entity("GameManager.Entities.CharacterWeapon", b =>
+                {
+                    b.HasOne("GameManager.Entities.Character", "Character")
+                        .WithMany("CharacterWeapons")
+                        .HasForeignKey("CharacterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameManager.Entities.Weapon", "Weapon")
+                        .WithMany("CharacterWeapons")
+                        .HasForeignKey("WeaponId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Character");
+
+                    b.Navigation("Weapon");
+                });
+
+            modelBuilder.Entity("GameManager.Entities.Character", b =>
+                {
+                    b.Navigation("CharacterWeapons");
+                });
+
             modelBuilder.Entity("GameManager.Entities.Game", b =>
                 {
                     b.Navigation("Characters");
+                });
+
+            modelBuilder.Entity("GameManager.Entities.Weapon", b =>
+                {
+                    b.Navigation("CharacterWeapons");
                 });
 #pragma warning restore 612, 618
         }
