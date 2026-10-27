@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GameManager\GameManager.csproj" />
+    <ProjectReference Include="..\Game_Manager_Core\Game_Manager_Core.csproj" />
   </ItemGroup>
 
 </Project>

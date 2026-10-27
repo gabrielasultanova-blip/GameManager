@@ -1,4 +1,5 @@
-﻿using GameManager.Entities;
+﻿using Game_Manager_Core.Interfaces;
+using GameManager.Entities;
 using GameManager.Migrations;
 using GamesWeb.ViewModels.Character;
 using Microsoft.AspNetCore.Mvc;
@@ -9,18 +10,21 @@ namespace GamesWeb.Controllers
 {
     public class CharacterController : Controller
     {
-        private readonly GameDbContext context;
+        private readonly ICharacterService characterService;
+        private readonly IGameService gameService;
 
-        public CharacterController(GameDbContext context)
+        public CharacterController(
+            ICharacterService characterService,
+            IGameService gameService)
         {
-            this.context = context;
+            this.characterService = characterService;
+            this.gameService = gameService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var characters = await context.Characters
-                .Include(c => c.Game)
-                .ToListAsync();
+            var characters =
+                await characterService.GetAllCharactersAsync();
 
             var model = new List<CharacterIndexViewModel>();
 
@@ -42,9 +46,8 @@ namespace GamesWeb.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var character = await context.Characters
-                .Include(c => c.Game)
-                .FirstOrDefaultAsync(c => c.Id == id);
+            var character =
+                await characterService.GetCharacterDetailsAsync(id);
 
             if (character == null)
             {
@@ -67,7 +70,7 @@ namespace GamesWeb.Controllers
         public async Task<IActionResult> Create()
         {
             ViewBag.Games = new SelectList(
-                await context.Games.ToListAsync(),
+                await gameService.GetAllGamesAsync(),
                 "Id",
                 "Title");
 
@@ -75,7 +78,8 @@ namespace GamesWeb.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CharacterCreateViewModel model)
+        public async Task<IActionResult> Create(
+            CharacterCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -88,14 +92,13 @@ namespace GamesWeb.Controllers
                     GameId = model.GameId
                 };
 
-                context.Characters.Add(character);
-                await context.SaveChangesAsync();
+                await characterService.AddCharacterAsync(character);
 
                 return RedirectToAction(nameof(Index));
             }
 
             ViewBag.Games = new SelectList(
-                await context.Games.ToListAsync(),
+                await gameService.GetAllGamesAsync(),
                 "Id",
                 "Title");
 
@@ -104,7 +107,8 @@ namespace GamesWeb.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var character = await context.Characters.FindAsync(id);
+            var character =
+                await characterService.GetCharacterByIdAsync(id);
 
             if (character == null)
             {
@@ -122,7 +126,7 @@ namespace GamesWeb.Controllers
             };
 
             ViewBag.Games = new SelectList(
-                await context.Games.ToListAsync(),
+                await gameService.GetAllGamesAsync(),
                 "Id",
                 "Title");
 
@@ -130,7 +134,8 @@ namespace GamesWeb.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, CharacterEditViewModel model)
+        public async Task<IActionResult> Edit(
+            int id, CharacterEditViewModel model)
         {
             if (id != model.Id)
             {
@@ -139,7 +144,8 @@ namespace GamesWeb.Controllers
 
             if (ModelState.IsValid)
             {
-                var character = await context.Characters.FindAsync(id);
+                var character =
+                    await characterService.GetCharacterByIdAsync(id);
 
                 if (character == null)
                 {
@@ -152,13 +158,13 @@ namespace GamesWeb.Controllers
                 character.Age = model.Age;
                 character.GameId = model.GameId;
 
-                await context.SaveChangesAsync();
+                await characterService.UpdateCharacterAsync(character);
 
                 return RedirectToAction(nameof(Index));
             }
 
             ViewBag.Games = new SelectList(
-                await context.Games.ToListAsync(),
+                await gameService.GetAllGamesAsync(),
                 "Id",
                 "Title");
 
@@ -167,7 +173,8 @@ namespace GamesWeb.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var character = await context.Characters.FindAsync(id);
+            var character =
+                await characterService.GetCharacterByIdAsync(id);
 
             if (character == null)
             {
@@ -188,13 +195,7 @@ namespace GamesWeb.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var character = await context.Characters.FindAsync(id);
-
-            if (character != null)
-            {
-                context.Characters.Remove(character);
-                await context.SaveChangesAsync();
-            }
+            await characterService.DeleteCharacterAsync(id);
 
             return RedirectToAction(nameof(Index));
         }

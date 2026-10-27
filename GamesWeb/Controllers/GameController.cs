@@ -1,4 +1,5 @@
-﻿using GameManager.Entities;
+﻿using Game_Manager_Core.Interfaces;
+using GameManager.Entities;
 using GameManager.Migrations;
 using GamesWeb.ViewModels.Game;
 using Microsoft.AspNetCore.Mvc;
@@ -8,17 +9,16 @@ namespace GamesWeb.Controllers
 {
     public class GameController : Controller
     {
-        private readonly GameDbContext context;
+        private readonly IGameService gameService;
 
-        public GameController(GameDbContext context)
+        public GameController(IGameService gameService)
         {
-            this.context = context;
+            this.gameService = gameService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var games = await context.Games
-                .ToListAsync();
+            var games = await gameService.GetAllGamesAsync();
 
             var model = new List<GameIndexViewModel>();
 
@@ -40,9 +40,7 @@ namespace GamesWeb.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var game = await context.Games
-                .Include(g => g.Characters)
-                .FirstOrDefaultAsync(g => g.Id == id);
+            var game = await gameService.GetGameDetailsAsync(id);
 
             if (game == null)
             {
@@ -84,8 +82,7 @@ namespace GamesWeb.Controllers
                     Developer = model.Developer
                 };
 
-                context.Games.Add(game);
-                await context.SaveChangesAsync();
+                await gameService.AddGameAsync(game);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -95,7 +92,7 @@ namespace GamesWeb.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var game = await context.Games.FindAsync(id);
+            var game = await gameService.GetGameByIdAsync(id);
 
             if (game == null)
             {
@@ -116,7 +113,8 @@ namespace GamesWeb.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, GameEditViewModel model)
+        public async Task<IActionResult> Edit(
+            int id, GameEditViewModel model)
         {
             if (id != model.Id)
             {
@@ -125,7 +123,7 @@ namespace GamesWeb.Controllers
 
             if (ModelState.IsValid)
             {
-                var game = await context.Games.FindAsync(id);
+                var game = await gameService.GetGameByIdAsync(id);
 
                 if (game == null)
                 {
@@ -138,7 +136,7 @@ namespace GamesWeb.Controllers
                 game.AgeRating = model.AgeRating;
                 game.Developer = model.Developer;
 
-                await context.SaveChangesAsync();
+                await gameService.UpdateGameAsync(game);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -148,7 +146,7 @@ namespace GamesWeb.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var game = await context.Games.FindAsync(id);
+            var game = await gameService.GetGameByIdAsync(id);
 
             if (game == null)
             {
@@ -168,16 +166,10 @@ namespace GamesWeb.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var game = await context.Games.FindAsync(id);
-
-            if (game != null)
-            {
-                context.Games.Remove(game);
-
-                await context.SaveChangesAsync();
-            }
+            await gameService.DeleteGameAsync(id);
 
             return RedirectToAction(nameof(Index));
         }
     }
 }
+

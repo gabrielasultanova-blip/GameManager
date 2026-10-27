@@ -31,7 +31,7 @@ namespace GameManager.Migrations
 
             modelBuilder.Entity<CharacterWeapon>()
                 .HasOne(cw => cw.Character)
-                .WithMany(c => c.CharacterWeapons)
+                .WithMany()
                 .HasForeignKey(cw => cw.CharacterId)
                 .OnDelete(DeleteBehavior.Cascade);
 

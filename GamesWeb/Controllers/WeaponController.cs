@@ -1,4 +1,5 @@
-﻿using GameManager.Entities;
+﻿using Game_Manager_Core.Interfaces;
+using GameManager.Entities;
 using GameManager.Migrations;
 using GamesWeb.ViewModels.Weapon;
 using Microsoft.AspNetCore.Mvc;
@@ -9,19 +10,20 @@ namespace GamesWeb.Controllers
 {
     public class WeaponController : Controller
     {
-        private readonly GameDbContext context;
+        private readonly IWeaponService weaponService;
+        private readonly ICharacterService characterService;
 
-        public WeaponController(GameDbContext context)
+        public WeaponController(
+            IWeaponService weaponService,
+            ICharacterService characterService)
         {
-            this.context = context;
+            this.weaponService = weaponService;
+            this.characterService = characterService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var weapons = await context.Weapons
-                .Include(w => w.CharacterWeapons)
-                .ThenInclude(cw => cw.Character)
-                .ToListAsync();
+            var weapons = await weaponService.GetAllWeaponsAsync();
 
             var model = new List<WeaponIndexViewModel>();
 
@@ -33,9 +35,10 @@ namespace GamesWeb.Controllers
                     Name = weapon.Name,
                     Type = weapon.Type,
                     Damage = weapon.Damage,
-
-                    CharacterName = string.Join(", ", weapon.CharacterWeapons
-                        .Select(cw => cw.Character.FirstName + " " + cw.Character.LastName))
+                    CharacterName = string.Join(", ",
+                        weapon.CharacterWeapons.Select(cw =>
+                            cw.Character.FirstName + " " +
+                            cw.Character.LastName))
                 });
             }
 
@@ -44,10 +47,8 @@ namespace GamesWeb.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var weapon = await context.Weapons
-                .Include(w => w.CharacterWeapons)
-                .ThenInclude(cw => cw.Character)
-                .FirstOrDefaultAsync(w => w.Id == id);
+            var weapon =
+                await weaponService.GetWeaponWithCharactersAsync(id);
 
             if (weapon == null)
             {
@@ -60,9 +61,10 @@ namespace GamesWeb.Controllers
                 Name = weapon.Name,
                 Type = weapon.Type,
                 Damage = weapon.Damage,
-
-                CharacterName = string.Join(", ", weapon.CharacterWeapons
-                    .Select(cw => cw.Character.FirstName + " " + cw.Character.LastName))
+                CharacterName = string.Join(", ",
+                    weapon.CharacterWeapons.Select(cw =>
+                        cw.Character.FirstName + " " +
+                        cw.Character.LastName))
             };
 
             return View(model);
@@ -75,7 +77,8 @@ namespace GamesWeb.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(WeaponCreateViewModel model)
+        public async Task<IActionResult> Create(
+            WeaponCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -88,14 +91,14 @@ namespace GamesWeb.Controllers
 
                 foreach (var characterId in model.CharacterIds)
                 {
-                    weapon.CharacterWeapons.Add(new CharacterWeapon
-                    {
-                        CharacterId = characterId
-                    });
+                    weapon.CharacterWeapons.Add(
+                        new CharacterWeapon
+                        {
+                            CharacterId = characterId
+                        });
                 }
 
-                context.Weapons.Add(weapon);
-                await context.SaveChangesAsync();
+                await weaponService.AddWeaponAsync(weapon);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -106,9 +109,7 @@ namespace GamesWeb.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var weapon = await context.Weapons
-                .Include(w => w.CharacterWeapons)
-                .FirstOrDefaultAsync(w => w.Id == id);
+            var weapon = await weaponService.GetWeaponByIdAsync(id);
 
             if (weapon == null)
             {
@@ -121,18 +122,19 @@ namespace GamesWeb.Controllers
                 Name = weapon.Name,
                 Type = weapon.Type,
                 Damage = weapon.Damage,
-
                 CharacterIds = weapon.CharacterWeapons
                     .Select(cw => cw.CharacterId)
                     .ToList()
             };
 
             await LoadCharacters(model.CharacterIds);
+
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, WeaponEditViewModel model)
+        public async Task<IActionResult> Edit(
+            int id, WeaponEditViewModel model)
         {
             if (id != model.Id)
             {
@@ -141,9 +143,8 @@ namespace GamesWeb.Controllers
 
             if (ModelState.IsValid)
             {
-                var weapon = await context.Weapons
-                    .Include(w => w.CharacterWeapons)
-                    .FirstOrDefaultAsync(w => w.Id == id);
+                var weapon =
+                    await weaponService.GetWeaponByIdAsync(id);
 
                 if (weapon == null)
                 {
@@ -154,18 +155,8 @@ namespace GamesWeb.Controllers
                 weapon.Type = model.Type;
                 weapon.Damage = model.Damage;
 
-                weapon.CharacterWeapons.Clear();
-
-                foreach (var characterId in model.CharacterIds)
-                {
-                    weapon.CharacterWeapons.Add(new CharacterWeapon
-                    {
-                        CharacterId = characterId,
-                        WeaponId = weapon.Id
-                    });
-                }
-
-                await context.SaveChangesAsync();
+                await weaponService.UpdateWeaponAsync(
+                    weapon, model.CharacterIds);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -176,7 +167,7 @@ namespace GamesWeb.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var weapon = await context.Weapons.FindAsync(id);
+            var weapon = await weaponService.GetWeaponByIdAsync(id);
 
             if (weapon == null)
             {
@@ -197,28 +188,25 @@ namespace GamesWeb.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var weapon = await context.Weapons.FindAsync(id);
-
-            if (weapon != null)
-            {
-                context.Weapons.Remove(weapon);
-                await context.SaveChangesAsync();
-            }
+            await weaponService.DeleteWeaponAsync(id);
 
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task LoadCharacters(List<int> selectedCharacters = null)
+        private async Task LoadCharacters(
+            List<int> selectedCharacters = null)
         {
-            var characters = await context.Characters
-                .Select(c => new
-                {
-                    c.Id,
-                    FullName = c.FirstName + " " + c.LastName
-                }).ToListAsync();
+            var characters =
+                await characterService.GetAllCharactersAsync();
+
+            var options = characters.Select(c => new
+            {
+                c.Id,
+                FullName = c.FirstName + " " + c.LastName
+            }).ToList();
 
             ViewBag.Characters = new MultiSelectList(
-                characters,
+                options,
                 "Id",
                 "FullName",
                 selectedCharacters);
