@@ -22,6 +22,7 @@ namespace GameManager.Migrations
         public DbSet<Weapon> Weapons { get; set; }
         public DbSet<CharacterWeapon> CharacterWeapons { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -31,7 +32,7 @@ namespace GameManager.Migrations
 
             modelBuilder.Entity<CharacterWeapon>()
                 .HasOne(cw => cw.Character)
-                .WithMany()
+                .WithMany(c => c.CharacterWeapons)
                 .HasForeignKey(cw => cw.CharacterId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -41,5 +42,6 @@ namespace GameManager.Migrations
                 .HasForeignKey(cw => cw.WeaponId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
+
     }
 }
