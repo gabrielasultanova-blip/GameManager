@@ -8,5 +8,7 @@
         public int ReleaseYear { get; set; }
         public string AgeRating { get; set; }
         public string Developer { get; set; }
+
+        public List<string> Characters { get; set; } = new List<string>();
     }
 }

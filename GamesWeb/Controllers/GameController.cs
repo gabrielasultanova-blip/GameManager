@@ -16,9 +16,24 @@ namespace GamesWeb.Controllers
             this.gameService = gameService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? search, string? genre, string? sortOrder)
         {
-            var games = await gameService.GetAllGamesAsync();
+            var games = await gameService.GetAllGamesAsync(
+        search, genre, sortOrder);
+
+            var genres = await gameService.GetAllGenresAsync();
+
+            ViewBag.Search = search;
+            ViewBag.Genre = genre;
+            if (sortOrder != null)
+            {
+                ViewBag.SortOrder = sortOrder;
+            }
+            else
+            {
+                ViewBag.SortOrder = "year_desc";
+            }
+            ViewBag.Genres = genres;
 
             var model = new List<GameIndexViewModel>();
 
@@ -31,7 +46,11 @@ namespace GamesWeb.Controllers
                     Genre = game.Genre,
                     ReleaseYear = game.ReleaseYear,
                     AgeRating = game.AgeRating,
-                    Developer = game.Developer
+                    Developer = game.Developer,
+
+                    Characters = game.Characters
+                        .Select(c => c.FirstName + " " + c.LastName)
+                        .ToList()
                 });
             }
 
